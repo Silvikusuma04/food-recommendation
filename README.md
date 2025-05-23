@@ -56,26 +56,31 @@ Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.k
 ### Exploratory Data Analysis:
 
 1. **Distribusi Rating**
+
    ![Distribusi Rating](img/dis_rating.png)
 
    Distribusi rating sangat tidak seimbang dengan dominasi rating 5. Hal ini menunjukkan bahwa pengguna cenderung hanya memberi nilai tinggi.
 
 2. **Jumlah Rating per User**
+
    ![Jumlah Rating](img/jumlah_rating.png)
 
    Sebagian besar pengguna memberikan sedikit rating, menunjukkan ketimpangan aktivitas antar pengguna.
 
 3. **Boxplot Rating (Outlier Detection)**
+
    ![Boxplot](img/boxplot.png)
 
    Boxplot menunjukkan adanya beberapa outlier terutama pada rating rendah (0-2), walau mayoritas rating berada pada kisaran tinggi.
 
 4. **Korelasi antar Fitur Nutrisi**
+
    ![Korelasi](img/kor.png)
 
    Terlihat bahwa nilai kalori memiliki korelasi tinggi terhadap kadar karbohidrat dan gula. Ini memberikan informasi penting dalam membangun fitur tambahan untuk filtering nutrisi di masa depan.
 
 5. **Distribusi Jumlah Bahan dalam Resep**
+
    ![Jumlah Bahan](img/dis_bahan_resep.png)
 
    Kebanyakan resep memiliki 7 hingga 13 bahan, mencerminkan masakan harian rumah tangga yang tidak terlalu kompleks.
