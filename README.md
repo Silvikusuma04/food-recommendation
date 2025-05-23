@@ -434,8 +434,6 @@ print(hasil[['name', 'description']])
 * Mengindikasikan bahwa **User ID 8937 kemungkinan memiliki preferensi terhadap resep inovatif**, eksklusif, atau bertema event kompetisi.
 * Pendekatan ini bersifat **personalized**, karena didasarkan pada pola interaksi pengguna lain yang mirip secara latent (embedding space).
 
-Berikut adalah versi profesional dari bagian **Dampak terhadap Permasalahan Bisnis** tanpa penggunaan emotikon atau simbol visual, siap untuk langsung disalin ke dalam laporan proyek atau README Anda:
-
 ---
 
 ## Dampak terhadap Permasalahan Bisnis
