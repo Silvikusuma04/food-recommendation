@@ -170,9 +170,9 @@ Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep y
 1. **TF-IDF Vectorization**
    Dokumen teks `content` (gabungan dari `name`, `description`, dan `ingredients`) direpresentasikan dalam bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency), dengan rumus umum:
 
-$$
+```math
 \text{TF-IDF}(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)
-$$
+```
 
 * TF(t,d): Frekuensi kemunculan kata `t` dalam dokumen `d`
 * N: Jumlah total dokumen
