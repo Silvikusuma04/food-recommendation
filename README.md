@@ -165,56 +165,160 @@ Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.k
 
 ### Content-Based Filtering
 
-* **Algoritma**: TF-IDF + Cosine Similarity + NearestNeighbors
-* **Output**: Rekomendasi resep mirip
+Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep yang mirip satu sama lain berdasarkan teks deskripsi dan bahan-bahan. Proses utamanya:
 
-Contoh: 'Cream of Spinach Soup' → beberapa varian serupa muncul di hasil seperti varian rendah kalori dan dengan bahan alternatif.
+1. **TF-IDF Vectorization**
+   Dokumen teks `content` (gabungan dari `name`, `description`, dan `ingredients`) direpresentasikan dalam bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency), dengan rumus umum:
 
-### Collaborative Filtering
+   $$
+   TF\text{-}IDF(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)
+   $$
 
-* Menggunakan Keras Model subclassing:
-* Memprediksi rating user terhadap resep tertentu:
+   Di mana:
+
+   * $TF(t,d)$: frekuensi kata $t$ dalam dokumen $d$
+   * $DF(t)$: jumlah dokumen yang mengandung kata $t$
+   * $N$: total jumlah dokumen
+
+2. **Cosine Similarity**
+   Digunakan untuk mengukur kemiripan antar dokumen berdasarkan sudut antar vektor:
+
+   $$
+   \text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
+   $$
+
+   Pendekatan ini diimplementasikan melalui model `NearestNeighbors` dari `sklearn`.
+
+3. **Rekomendasi**
+   Fungsi `recommend_content()` menerima nama resep dan mengembalikan N resep terdekat berdasarkan kemiripan cosine dari TF-IDF matrix. Contoh:
+
+   ```python
+   print("Rekomendasi makanan yang mirip 'Cream of Spinach Soup':")
+   print(recommend_content("cream of spinach soup"))
+   ```
+
+   Output: rekomendasi dengan nama dan deskripsi resep-resep yang paling serupa.
+
+4. **Model Disimpan**
+
+   * `tfidf_vectorizer.pkl` – untuk mengubah input teks baru ke vektor.
+   * `tfidf_matrix.pkl` – representasi resep dalam bentuk TF-IDF.
+   * `nearest_neighbors_model.pkl` – model yang bisa langsung digunakan untuk pencarian similarity.
+   * `name_to_index.pkl` – mapping nama ke indeks resep.
+
+---
+
+### Collaborative Filtering (Deep Learning)
+
+Model ini mempelajari interaksi antar pengguna dan resep menggunakan arsitektur Artificial Neural Network berbasis embedding.
+
+#### Arsitektur Model
+
+```python
+class RecommenderNet(Model):
+    ...
+    def call(self, inputs):
+        user_vector = self.user_embedding(inputs[:, 0])
+        item_vector = self.item_embedding(inputs[:, 1])
+        dot_user_item = tf.tensordot(user_vector, item_vector, 2)
+        x = dot_user_item + self.user_bias(inputs[:, 0]) + self.item_bias(inputs[:, 1])
+        return x
+```
+
+Rumus prediksi:
 
 $$
-\hat{r}_{ui} = \langle \mathbf{p}_u, \mathbf{q}_i \rangle + b_u + b_i
+\hat{r}_{ui} = \mathbf{p}_u \cdot \mathbf{q}_i + b_u + b_i
 $$
 
-Model:
+Dimana:
 
-* Embedding Layer untuk user dan item
-* Dot product + bias
-* Loss: MSE, Optimizer: Adam
+* $\mathbf{p}_u$: vektor embedding user
+* $\mathbf{q}_i$: vektor embedding item
+* $b_u, b_i$: bias user dan item
+* $\hat{r}_{ui}$: prediksi rating
+
+#### Konfigurasi Training
+
+* **Loss Function**: `mean squared error (MSE)`
+* **Optimizer**: `Adam` (learning rate 0.0001)
+* **Callback**: `EarlyStopping` (patience 3, restore best weights)
+* **Epochs**: 20, batch size: 64
+
+```python
+history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=20, callbacks=[early_stop])
+```
+
+#### Evaluasi
+
+```python
+y_pred = model.predict(x_val)
+mse = mean_squared_error(y_val, y_pred)
+rmse = np.sqrt(mse)
+```
 
 **Hasil Evaluasi**:
 
 * MSE: 0.2130
 * RMSE: 0.4615
 
+Grafik:
+
 ![Training Curve](img/plot.png)
 
-Model menunjukkan konvergensi baik dan hasil evaluasi yang optimal. Tidak terjadi overfitting signifikan.
+Insight:
 
-Contoh hasil rekomendasi User ID 8937:
+* Model menunjukkan konvergensi stabil.
+* Tidak terjadi overfitting karena val\_loss mengikuti train\_loss.
 
-1. Bacon Lattice Tomato Muffins
-2. Breakfast Shepherd’s Pie
-3. Mexican Stack Up
+---
 
 ## Evaluation
 
-### Metrik Evaluasi:
+### Metode Evaluasi
 
-* **RMSE**: $RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (\hat{r}_i - r_i)^2}$
+1. **Mean Squared Error (MSE)**:
 
-Hasil:
+   $$
+   MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+   $$
+**Nilai MSE: 0.2130**
 
-* RMSE: 0.4615 (model ANN)
+2. **Root Mean Squared Error (RMSE)**:
 
-## Struktur dan Deployment
+   $$
+   RMSE = \sqrt{MSE}
+   $$
 
-* Model content-based dan collaborative disimpan:
+   RMSE lebih mudah diinterpretasikan karena memiliki satuan yang sama dengan target (rating).
 
-  * `recommendasi_model.keras` untuk ANN
-  * `tfidf_matrix.pkl`, `vectorizer.pkl`, `nearest_neighbors.pkl` untuk content-based
+**Nilai RMSE: 0.4615**
 
+Interpretasi:
+
+* Rata-rata prediksi model menyimpang sebesar ±0.46 dari nilai aktual.
+* Cukup baik untuk sistem rekomendasi yang bersifat subyektif dan dinamis.
+
+---
+
+## Inference: Collaborative Filtering
+
+```python
+hasil = recommend_for_user(8937, top_n=5)
+```
+
+Output (top-N recommendation):
+
+| name                         | description                        |
+| ---------------------------- | ---------------------------------- |
+| Bacon Lattice Tomato Muffins | Ready, Set, Cook! Contest Entry... |
+| Breakfast Shepherd’s Pie     | Contest Entry...                   |
+| Mexican Stack Up             | Meksiko-style food layer...        |
+| Ragu Shuka                   | Mediterranean flavor...            |
+| Tropical Potato Salad        | Tropical salad with pineapples...  |
+
+**Insight**:
+
+* Resep yang direkomendasikan cenderung memiliki tema kompetisi atau rasa unik.
+* Bisa diasumsikan user 8937 menyukai makanan eksperimental atau kompetitif.
 
