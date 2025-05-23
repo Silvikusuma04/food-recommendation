@@ -171,8 +171,12 @@ Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep y
    Dokumen teks `content` (gabungan dari `name`, `description`, dan `ingredients`) direpresentasikan dalam bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency), dengan rumus umum:
 
 $$
-\text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
+\text{TF-IDF}(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)
 $$
+
+* TF(t,d): Frekuensi kemunculan kata `t` dalam dokumen `d`
+* N: Jumlah total dokumen
+* DF(t): Jumlah dokumen yang mengandung kata `t`
 
 2. **Cosine Similarity**
    Digunakan untuk mengukur kemiripan antar dokumen berdasarkan sudut antar vektor:
