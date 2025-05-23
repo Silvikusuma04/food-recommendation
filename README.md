@@ -1,10 +1,41 @@
-# Food Recommendation System
+# Food Recommendation 
 
 ## Project Overview
 
-Sistem rekomendasi makanan menjadi kebutuhan penting dalam mendukung keputusan pengguna dalam memilih resep yang sesuai dengan selera atau kebutuhan nutrisi mereka. Proyek ini bertujuan untuk membangun sistem rekomendasi berbasis content-based filtering dan collaborative filtering menggunakan dataset dari Food.com.
+Rekomendasi makanan berbasis teknologi kini menjadi kebutuhan esensial dalam mendukung pengalaman personalisasi pengguna di dunia kuliner digital. Dalam era big data dan pertumbuhan masif platform berbagi resep seperti Food.com, pengguna dihadapkan pada tantangan besar dalam menemukan resep makanan yang sesuai dengan selera, gaya hidup, atau kebutuhan nutrisi tertentu. Tidak hanya soal preferensi rasa, banyak pengguna juga ingin menemukan resep yang cocok dengan keterbatasan bahan, waktu memasak, maupun kondisi kesehatan seperti diet rendah kalori atau bebas gula.
 
-Proyek ini penting karena memungkinkan personalisasi pengalaman pengguna di platform kuliner. Seiring meningkatnya volume data resep dan ulasan pengguna, pemanfaatan machine learning memungkinkan sistem merekomendasikan makanan secara otomatis, efisien, dan relevan.
+Berdasarkan hal tersebut, proyek ini dibangun untuk mengembangkan sistem rekomendasi makanan dengan memanfaatkan pendekatan **machine learning**, khususnya **content-based filtering** dan **collaborative filtering**. Dua pendekatan ini memungkinkan sistem memberikan rekomendasi berdasarkan:
+
+* **Karakteristik resep** (bahan, nama, deskripsi)
+* **Perilaku dan preferensi pengguna** (riwayat rating, pola interaksi)
+
+Tujuan utama proyek ini bukan hanya menyajikan rekomendasi resep populer, tetapi **resep yang relevan secara kontekstual dan personal bagi setiap pengguna**. Dalam jangka panjang, sistem seperti ini juga berpotensi membantu platform kuliner dalam meningkatkan **retensi pengguna**, mengurangi **bounce rate**, dan memberikan nilai tambah melalui **fitur pintar berbasis data**.
+
+Kebutuhan akan sistem ini diperkuat oleh berbagai riset. Chow et al. (2023) menyatakan bahwa recommender system di bidang makanan menghadapi tantangan unik seperti variasi rasa, kompleksitas bahan, dan preferensi personal yang tinggi. Selain itu, laporan Bahri et al. (2021) menunjukkan bahwa penerapan sistem rekomendasi berbasis collaborative filtering pada aplikasi lokal seperti EatAja mampu meningkatkan relevansi hasil hingga 30% dibanding pendekatan manual atau statis.
+
+### Permasalahan dan Urgensi
+
+1. **Volume Data Besar**: Dengan ratusan ribu resep dan ulasan pengguna yang terus bertambah, pengguna kesulitan menyaring dan menemukan resep yang benar-benar sesuai.
+2. **Preferensi yang Unik dan Personal**: Preferensi makanan sangat bervariasi antar pengguna, mulai dari kesukaan rasa, alergi, hingga pilihan diet.
+3. **Kebutuhan Personalization**: Sistem statis tidak mampu menangkap pola kompleks dari pengguna aktif.
+4. **Tantangan Industri Kuliner Digital**: Persaingan platform tinggi, fitur pintar menjadi keunggulan kompetitif.
+
+### Solusi yang Diajukan
+
+1. **Content-Based Filtering**:
+
+   * Memanfaatkan fitur teks dari resep (judul, deskripsi, bahan) untuk menghitung kemiripan antar resep menggunakan TF-IDF dan cosine similarity.
+   * Cocok untuk memberikan rekomendasi mirip dengan resep yang disukai pengguna sebelumnya.
+
+2. **Collaborative Filtering**:
+
+   * Membangun model artificial neural network (ANN) untuk mempelajari pola interaksi pengguna-resep berbasis data rating.
+   * Memberikan rekomendasi berdasarkan kesamaan preferensi antar pengguna.
+
+3. **Implementasi dan Integrasi**:
+
+   * Sistem dibangun dengan Python menggunakan library seperti `scikit-learn`, `TensorFlow`, dan `Keras`.
+   * Semua model disimpan dalam format `.pkl` dan `.keras` untuk keperluan deployment.
 
 ---
 
@@ -75,37 +106,59 @@ Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.k
 
 ---
 
-### Exploratory Data Analysis:
+## Exploratory Data Analysis (EDA)
 
-1. **Distribusi Rating**
+Untuk memahami karakteristik data sebelum diterapkan ke model rekomendasi, dilakukan eksplorasi data visual dan statistik. Berikut beberapa visualisasi kunci dan insight yang dihasilkan:
 
-   ![Distribusi Rating](img/dis_rating.png)
+### 1. Distribusi Rating Pengguna terhadap Resep
 
-   Distribusi rating sangat tidak seimbang dengan dominasi rating 5. Hal ini menunjukkan bahwa pengguna cenderung hanya memberi nilai tinggi.
+![Distribusi Rating](img/dis_rating.png)
 
-2. **Jumlah Rating per User**
+Distribusi ini menunjukkan frekuensi dari setiap nilai rating yang diberikan pengguna terhadap resep makanan di platform. Terlihat bahwa:
 
-   ![Jumlah Rating](img/jumlah_rating.png)
+* Mayoritas rating berada pada nilai **5**, menunjukkan bahwa pengguna cenderung hanya memberikan rating ketika mereka **sangat puas** dengan resep tersebut.
+* Rating rendah seperti 0–2 relatif jarang diberikan. Hal ini bisa menyebabkan **bias pada model**, karena model akan lebih banyak belajar dari sampel positif (suka).
+* Distribusi ini **tidak seimbang (imbalanced)**, dan perlu menjadi pertimbangan saat melakukan pelatihan model.
 
-   Sebagian besar pengguna memberikan sedikit rating, menunjukkan ketimpangan aktivitas antar pengguna.
+### 2. Jumlah Rating yang Diberikan oleh Setiap Pengguna
 
-3. **Boxplot Rating (Outlier Detection)**
+![Jumlah Rating per User](img/jumlah_rating.png)
 
-   ![Boxplot](img/boxplot.png)
+Visualisasi ini menggambarkan berapa banyak rating yang diberikan masing-masing pengguna. Insight yang diperoleh:
 
-   Boxplot menunjukkan adanya beberapa outlier terutama pada rating rendah (0-2), walau mayoritas rating berada pada kisaran tinggi.
+* Sebagian besar pengguna hanya memberikan **1 hingga 3 rating**, artinya partisipasi pengguna dalam proses review relatif **rendah**.
+* Terdapat beberapa pengguna yang sangat aktif, memberikan ribuan rating, yang berpotensi menjadi **pengguna outlier** atau pengguna berat (power users).
+* Ketimpangan ini penting untuk **collaborative filtering**, karena cold-start problem bisa terjadi pada pengguna baru yang hanya memiliki sedikit interaksi.
 
-4. **Korelasi antar Fitur Nutrisi**
+### 3. Boxplot Rating (Outlier Detection)
 
-   ![Korelasi](img/kor.png)
+![Boxplot](img/boxplot.png)
 
-   Terlihat bahwa nilai kalori memiliki korelasi tinggi terhadap kadar karbohidrat dan gula. Ini memberikan informasi penting dalam membangun fitur tambahan untuk filtering nutrisi di masa depan.
+Boxplot ini digunakan untuk mendeteksi **outlier pada distribusi rating**:
 
-5. **Distribusi Jumlah Bahan dalam Resep**
+* Mayoritas rating berada di **kuartil atas**, khususnya di nilai 4 dan 5.
+* Outlier signifikan terdeteksi pada **nilai 0, 1, dan 2**, yang meskipun jumlahnya kecil, tetap berpengaruh terhadap distribusi keseluruhan.
+* Informasi ini dapat digunakan untuk **analisis noise** dalam data, serta mengevaluasi apakah perlu dilakukan transformasi atau filtering.
 
-   ![Jumlah Bahan](img/dis_bahan_resep.png)
+### 4. Korelasi antar Fitur Nutrisi
 
-   Kebanyakan resep memiliki 7 hingga 13 bahan, mencerminkan masakan harian rumah tangga yang tidak terlalu kompleks.
+![Korelasi](img/kor.png)
+
+Heatmap ini menunjukkan **koefisien korelasi Pearson** antar variabel nutrisi dalam resep, seperti kalori, lemak, gula, protein, dan karbohidrat. Temuan utama:
+
+* **Kalori memiliki korelasi tinggi dengan karbohidrat (0.90)** dan gula (0.86), menunjukkan bahwa makanan tinggi kalori cenderung tinggi karbohidrat dan manis.
+* **Total fat dan saturated fat** juga sangat berkorelasi (0.87), sesuai dengan pemahaman gizi umum.
+* Korelasi ini bisa dimanfaatkan untuk fitur tambahan atau untuk **rekomendasi berbasis kebutuhan nutrisi**, misalnya bagi pengguna dengan batasan kalori atau gula.
+
+### 5. Distribusi Jumlah Bahan pada Setiap Resep
+
+![Jumlah Bahan](img/dis_bahan_resep.png)
+
+Visualisasi ini menampilkan frekuensi jumlah bahan (`ingredients`) dalam tiap resep:
+
+* Sebagian besar resep mengandung antara **7 hingga 13 bahan**, yang merupakan jumlah ideal untuk **masakan rumahan praktis**.
+* Distribusi berbentuk **normal miring ke kanan (right-skewed)**, dengan outlier yang memiliki hingga lebih dari 40 bahan.
+* Informasi ini relevan untuk **filtering tambahan** (misalnya resep dengan sedikit bahan), atau untuk memahami **kompleksitas resep** yang direkomendasikan.
 
 ---
 
@@ -271,54 +324,131 @@ Insight:
 
 ---
 
-## Evaluation
+## Evaluasi
 
-### Metode Evaluasi
+### Metode Evaluasi yang Digunakan
 
-1. **Mean Squared Error (MSE)**:
+#### 1. **Mean Squared Error (MSE)**
 
-   $$
-   MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-   $$
-**Nilai MSE: 0.2130**
+$$
+MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$$
 
-2. **Root Mean Squared Error (RMSE)**:
+* MSE mengukur **rata-rata kesalahan kuadrat** antara nilai prediksi dan nilai aktual.
+* Nilai MSE yang lebih rendah menandakan bahwa rata-rata kesalahan prediksi lebih kecil.
+* Dalam konteks sistem rekomendasi, MSE digunakan untuk mengevaluasi seberapa baik model dalam memprediksi rating pengguna terhadap resep.
 
-   $$
-   RMSE = \sqrt{MSE}
-   $$
+**Hasil Evaluasi:**
 
-   RMSE lebih mudah diinterpretasikan karena memiliki satuan yang sama dengan target (rating).
+* **MSE = 0.2130**
 
-**Nilai RMSE: 0.4615**
+---
 
-Interpretasi:
+#### 2. **Root Mean Squared Error (RMSE)**
 
-* Rata-rata prediksi model menyimpang sebesar ±0.46 dari nilai aktual.
-* Cukup baik untuk sistem rekomendasi yang bersifat subyektif dan dinamis.
+RMSE adalah akar kuadrat dari MSE:
+
+$$
+RMSE = \sqrt{MSE}
+$$
+
+* RMSE lebih **mudah diinterpretasikan** karena memiliki satuan yang sama dengan target (rating), yaitu skala 0–1 (setelah normalisasi).
+* RMSE juga lebih **sensitif terhadap outlier** dibandingkan MSE.
+
+**Hasil Evaluasi:**
+
+* **RMSE = 0.4615**
+
+### Interpretasi Nilai
+
+* Nilai RMSE sebesar **0.4615** berarti bahwa **prediksi rating model ANN memiliki deviasi rata-rata ±0.46 dari nilai rating sebenarnya**.
+* Dalam domain sistem rekomendasi, RMSE di bawah 0.5 dianggap **cukup baik**, terutama untuk dataset nyata dengan bias dan distribusi rating yang tidak merata.
+* Mengingat model tidak memiliki informasi eksplisit tentang isi resep (hanya berdasarkan pola rating), hasil ini cukup memuaskan dan menunjukkan bahwa model berhasil menangkap preferensi pengguna.
+
+### Visualisasi Kurva Pelatihan
+
+Berikut adalah kurva training dan validation loss selama proses pelatihan model collaborative filtering berbasis deep learning:
+
+![Training Curve](img/plot.png)
+
+**Penjelasan Kurva:**
+
+* **Training Loss** menurun secara konsisten, menandakan bahwa model belajar dari data latih.
+* **Validation Loss** menunjukkan pola serupa di awal, tetapi kemudian stabil. Ini menunjukkan **konvergensi model**.
+* Tidak terjadi overfitting signifikan karena tidak ada lonjakan pada validation loss.
 
 ---
 
 ## Inference: Collaborative Filtering
 
+Setelah model collaborative filtering dilatih, dilakukan proses **inference** untuk memberikan rekomendasi makanan kepada pengguna berdasarkan pola historis rating pengguna lain yang memiliki preferensi serupa.
+
+### Fungsi: `recommend_for_user(user_id_raw, top_n=5)`
+
+Fungsi ini menerima input `user_id_raw` (dalam bentuk asli dari dataset) dan mengembalikan daftar `top_n` resep makanan yang diprediksi paling disukai oleh pengguna tersebut berdasarkan model deep learning.
+
+### Penjelasan Tahapan Kode:
+
 ```python
-hasil = recommend_for_user(8937, top_n=5)
+def recommend_for_user(user_id_raw, top_n=5):
+    try:
+        user_idx = user_encoder.transform([user_id_raw])[0]
+    except ValueError:
+        print(f"User ID {user_id_raw} tidak ditemukan dalam data training.")
+        return pd.DataFrame()
+        
+    item_indices = np.arange(num_items)
+    user_input = np.full_like(item_indices, user_idx)
+
+    predictions = model.predict(np.stack([user_input, item_indices], axis=1), verbose=0)
+
+    top_indices = predictions.flatten().argsort()[::-1][:top_n]
+    recommended_item_ids = item_encoder.inverse_transform(top_indices)
+
+    return recipes[recipes['id'].isin(recommended_item_ids)][['id', 'name', 'description']].reset_index(drop=True)
 ```
 
-Output (top-N recommendation):
+#### Rincian Tahapan Fungsi:
 
-| name                         | description                        |
-| ---------------------------- | ---------------------------------- |
-| Bacon Lattice Tomato Muffins | Ready, Set, Cook! Contest Entry... |
-| Breakfast Shepherd’s Pie     | Contest Entry...                   |
-| Mexican Stack Up             | Meksiko-style food layer...        |
-| Ragu Shuka                   | Mediterranean flavor...            |
-| Tropical Potato Salad        | Tropical salad with pineapples...  |
+1. **Transformasi ID Pengguna:**
 
-**Insight**:
+   * `LabelEncoder` digunakan untuk mengubah `user_id_raw` menjadi indeks numerik yang dikenali oleh model.
+   * Jika user tidak ditemukan dalam data pelatihan, fungsi akan mengembalikan `DataFrame` kosong sebagai fallback mechanism.
 
-* Resep yang direkomendasikan cenderung memiliki tema kompetisi atau rasa unik.
-* Bisa diasumsikan user 8937 menyukai makanan eksperimental atau kompetitif.
+2. **Pembuatan Input Prediksi:**
+
+   * Dibuat array pasangan `user_id` dengan semua `item_id` yang tersedia (seluruh resep).
+   * Ini memungkinkan kita memprediksi seluruh kemungkinan resep untuk user tertentu secara efisien dalam satu batch.
+
+3. **Prediksi Rating oleh Model:**
+
+   * Model akan memproses input dan menghasilkan prediksi rating (dalam rentang 0–1) untuk semua item.
+
+4. **Seleksi Top-N Item:**
+
+   * Prediksi diurutkan secara menurun.
+   * Dipilih `top_n` item (resep) dengan prediksi rating tertinggi.
+
+5. **Keluaran Rekomendasi:**
+
+   * ID item hasil prediksi diubah kembali ke bentuk aslinya (`recipe_id`) menggunakan inverse transform dari `item_encoder`.
+   * Keluaran akhir berupa `DataFrame` yang berisi kolom `id`, `name`, dan `description`.
+
+### Contoh Eksekusi Inference
+
+```python
+user_id_input = 8937
+print(f"Rekomendasi untuk User ID {user_id_input} berdasarkan Collaborative Filtering:")
+hasil = recommend_for_user(user_id_input, top_n=5)
+print("Pesanan Rekomendasi:")
+print(hasil[['name', 'description']])
+```
+### Insight:
+
+* Rekomendasi yang muncul banyak berasal dari **kontes resep** atau memiliki karakteristik rasa dan konsep yang **unik/eksperimental**.
+* Mengindikasikan bahwa **User ID 8937 kemungkinan memiliki preferensi terhadap resep inovatif**, eksklusif, atau bertema event kompetisi.
+* Pendekatan ini bersifat **personalized**, karena didasarkan pada pola interaksi pengguna lain yang mirip secara latent (embedding space).
+
 
 
 
