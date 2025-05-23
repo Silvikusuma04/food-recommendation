@@ -280,7 +280,7 @@ joblib.dump(nn_model, 'nearest_neighbors_model.pkl')
 
 # Simpan mapping indeks
 with open('name_to_index.pkl', 'wb') as f:
-    pickle.dump(title_to_index, f)
+    pickle.dump(name_to_index, f)
 
 """**Save Model**
 
