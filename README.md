@@ -181,9 +181,9 @@ Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep y
 2. **Cosine Similarity**
    Digunakan untuk mengukur kemiripan antar dokumen berdasarkan sudut antar vektor:
 
-$$
+```math
 \text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
-$$
+```
 
    Pendekatan ini diimplementasikan melalui model `NearestNeighbors` dari `sklearn`.
 
