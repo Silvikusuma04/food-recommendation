@@ -307,21 +307,6 @@ y_pred = model.predict(x_val)
 mse = mean_squared_error(y_val, y_pred)
 rmse = np.sqrt(mse)
 ```
-
-**Hasil Evaluasi**:
-
-* MSE: 0.2130
-* RMSE: 0.4615
-
-Grafik:
-
-![Training Curve](img/plot.png)
-
-Insight:
-
-* Model menunjukkan konvergensi stabil.
-* Tidak terjadi overfitting karena val\_loss mengikuti train\_loss.
-
 ---
 
 ## Evaluasi
@@ -449,6 +434,89 @@ print(hasil[['name', 'description']])
 * Mengindikasikan bahwa **User ID 8937 kemungkinan memiliki preferensi terhadap resep inovatif**, eksklusif, atau bertema event kompetisi.
 * Pendekatan ini bersifat **personalized**, karena didasarkan pada pola interaksi pengguna lain yang mirip secara latent (embedding space).
 
+Berikut adalah versi profesional dari bagian **Dampak terhadap Permasalahan Bisnis** tanpa penggunaan emotikon atau simbol visual, siap untuk langsung disalin ke dalam laporan proyek atau README Anda:
+
+---
+
+## Dampak terhadap Permasalahan Bisnis
+
+Proyek sistem rekomendasi makanan ini dirancang dan diimplementasikan untuk mengatasi tantangan nyata yang dihadapi pengguna pada platform resep berskala besar seperti Food.com. Berdasarkan problem statement dan tujuan yang telah ditetapkan sebelumnya, berikut adalah analisis menyeluruh mengenai bagaimana model yang dibangun menjawab kebutuhan bisnis.
+
+### 1. Menjawab Tantangan Volume Data Besar
+
+**Masalah**:
+Jumlah resep mencapai ratusan ribu dengan jutaan interaksi pengguna yang tidak mungkin dianalisis secara manual.
+
+**Solusi yang Diterapkan**:
+
+* Pendekatan content-based filtering memanfaatkan representasi teks dari nama, deskripsi, dan bahan untuk menghitung kemiripan antar resep, sehingga sistem dapat menyaring rekomendasi yang relevan tanpa eksplorasi manual.
+* Collaborative filtering dengan arsitektur artificial neural network (ANN) secara otomatis menemukan pola kesamaan antar pengguna berdasarkan histori rating.
+
+**Dampak**:
+
+* Meningkatkan efisiensi pengguna dalam menemukan resep relevan di tengah data yang masif.
+* Mengurangi kebutuhan eksplorasi manual oleh pengguna, sehingga meningkatkan retensi dan pengalaman pengguna.
+
+---
+
+### 2. Menangkap Preferensi yang Sangat Personal
+
+**Masalah**:
+Preferensi makanan sangat bervariasi, seperti diet keto, rendah kalori, alergi, dan selera pribadi.
+
+**Solusi yang Diterapkan**:
+
+* TF-IDF menyimpan konteks unik dari setiap resep dalam bentuk representasi numerik.
+* Cosine similarity digunakan untuk menemukan resep yang paling mirip berdasarkan deskripsi dan bahan.
+* ANN mempelajari representasi pengguna dan item dalam ruang embedding, sehingga dapat menangkap kesamaan preferensi meskipun jenis makanannya berbeda.
+
+**Dampak**:
+
+* Rekomendasi menjadi lebih personal dan kontekstual.
+* Meningkatkan kepuasan dan relevansi hasil rekomendasi bagi masing-masing pengguna.
+
+---
+
+### 3. Mengatasi Cold Start dan Sparsity
+
+**Masalah**:
+
+* Pengguna baru (cold-start) dan resep baru sulit direkomendasikan jika sistem hanya bergantung pada rating.
+* Interaksi pengguna terhadap item sangat jarang (sparse), menyulitkan sistem tradisional dalam melakukan pembelajaran.
+
+**Solusi yang Diterapkan**:
+
+* Content-based filtering tidak bergantung pada rating, sehingga tetap dapat memberikan rekomendasi untuk pengguna atau resep baru.
+* Collaborative filtering berbasis deep learning lebih tangguh terhadap sparsity karena menggunakan pembelajaran representasi laten.
+
+**Dampak**:
+
+* Model lebih adaptif terhadap data baru dan dapat memberi rekomendasi awal yang tetap relevan.
+* Memperkuat cakupan sistem dan keberlanjutan performanya dalam jangka panjang.
+
+---
+
+### 4. Menjawab Kebutuhan Bisnis Kuliner Digital
+
+**Masalah Bisnis**:
+Platform kuliner digital menghadapi persaingan tinggi. Fitur rekomendasi menjadi pembeda strategis untuk meningkatkan user experience.
+
+**Solusi yang Diterapkan**:
+
+* Sistem ini dapat diintegrasikan sebagai fitur pintar pada website atau aplikasi kuliner.
+* Model dan pipeline sudah disiapkan dalam format `.keras`, `.pkl`, dan `.joblib`, sehingga siap untuk diterapkan pada lingkungan produksi.
+
+**Dampak**:
+
+* Meningkatkan keterlibatan pengguna dan durasi penggunaan platform.
+* Meningkatkan konversi dari eksplorasi resep ke eksekusi resep nyata oleh pengguna.
+* Membuka peluang monetisasi rekomendasi, seperti promosi bahan makanan atau kemitraan dengan brand.
+
+---
+
+## Kesimpulan
+
+Melalui pendekatan content-based dan collaborative filtering, sistem ini berhasil mengatasi masalah utama yang dihadapi pengguna, yaitu kesulitan menemukan resep yang sesuai secara cepat dan personal. Dengan akurasi model yang baik serta struktur sistem yang modular dan scalable, solusi ini tidak hanya efektif dari sisi teknis, tetapi juga memiliki nilai strategis dari perspektif bisnis dan pengalaman pengguna. Sistem ini dapat dikembangkan lebih lanjut untuk mendukung filtering berbasis nutrisi, alergi, dan bahkan input visual berbasis gambar.
 
 
 
