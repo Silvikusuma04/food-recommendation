@@ -48,26 +48,36 @@ Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.k
 * `rating`: Rating yang diberikan
 * `review`: Teks ulasan
 
+**missing value**:
+* terdapat missing value di kolom review, name dan description
+
+**dataset tidak memiliki dari data duplikat**
+
 ### Exploratory Data Analysis:
 
 1. **Distribusi Rating**
    ![Distribusi Rating](img/dis_rating.png)
-   Mayoritas rating yang diberikan pengguna bernilai 5, menunjukkan bias positif umum dalam ulasan pengguna.
+
+   Distribusi rating sangat tidak seimbang dengan dominasi rating 5. Hal ini menunjukkan bahwa pengguna cenderung hanya memberi nilai tinggi.
 
 2. **Jumlah Rating per User**
    ![Jumlah Rating](img/jumlah_rating.png)
-   Sebagian besar pengguna hanya memberikan sedikit ulasan, sebagian besar hanya satu hingga dua.
+
+   Sebagian besar pengguna memberikan sedikit rating, menunjukkan ketimpangan aktivitas antar pengguna.
 
 3. **Boxplot Rating (Outlier Detection)**
    ![Boxplot](img/boxplot.png)
-   Boxplot menunjukkan distribusi simetris namun dengan outlier di rating bawah (1–2) yang cukup jarang.
+
+   Boxplot menunjukkan adanya beberapa outlier terutama pada rating rendah (0-2), walau mayoritas rating berada pada kisaran tinggi.
 
 4. **Korelasi antar Fitur Nutrisi**
    ![Korelasi](img/kor.png)
+
    Terlihat bahwa nilai kalori memiliki korelasi tinggi terhadap kadar karbohidrat dan gula. Ini memberikan informasi penting dalam membangun fitur tambahan untuk filtering nutrisi di masa depan.
 
 5. **Distribusi Jumlah Bahan dalam Resep**
    ![Jumlah Bahan](img/dis_bahan_resep.png)
+
    Kebanyakan resep memiliki 7 hingga 13 bahan, mencerminkan masakan harian rumah tangga yang tidak terlalu kompleks.
 
 ## Data Preparation
@@ -124,6 +134,7 @@ Model:
 * RMSE: 0.4615
 
 ![Training Curve](img/plot.png)
+
 Model menunjukkan konvergensi baik dan hasil evaluasi yang optimal. Tidak terjadi overfitting signifikan.
 
 Contoh hasil rekomendasi User ID 8937:
