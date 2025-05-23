@@ -170,22 +170,16 @@ Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep y
 1. **TF-IDF Vectorization**
    Dokumen teks `content` (gabungan dari `name`, `description`, dan `ingredients`) direpresentasikan dalam bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency), dengan rumus umum:
 
-   $$
-   TF\text{-}IDF(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)
-   $$
-
-   Di mana:
-
-   * $TF(t,d)$: frekuensi kata $t$ dalam dokumen $d$
-   * $DF(t)$: jumlah dokumen yang mengandung kata $t$
-   * $N$: total jumlah dokumen
+$$
+\text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
+$$
 
 2. **Cosine Similarity**
    Digunakan untuk mengukur kemiripan antar dokumen berdasarkan sudut antar vektor:
 
-   $$
-   \text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
-   $$
+$$
+\text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
+$$
 
    Pendekatan ini diimplementasikan melalui model `NearestNeighbors` dari `sklearn`.
 
@@ -321,4 +315,7 @@ Output (top-N recommendation):
 
 * Resep yang direkomendasikan cenderung memiliki tema kompetisi atau rasa unik.
 * Bisa diasumsikan user 8937 menyukai makanan eksperimental atau kompetitif.
+
+
+
 
