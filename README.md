@@ -381,7 +381,7 @@ Evaluasi dilakukan dengan menggunakan resep `"pasta"` sebagai query.
 
 #### Hasil Rekomendasi dari Model:
 
-![Evaluasi Precision Content-Based](img/eval pasta.png)
+![Evaluasi Precision Content-Based](img/"eval pasta.png")
 
 ---
 
