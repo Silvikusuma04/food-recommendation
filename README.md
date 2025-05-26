@@ -259,9 +259,7 @@ print("Rekomendasi makanan yang mirip 'Cream of Spinach Soup':")
 print(recommend_content("cream of spinach soup"))
 ```
 
-#### 3. Diagram Arsitektur Inferensi
-
-Berikut adalah ilustrasi proses inferensi pada content-based filtering:
+#### 3. Hasil Inference
 
 ![Inference Content-Based Filtering](img/content.png)
 
@@ -343,9 +341,7 @@ recommended_recipes = df_recipes.iloc[top_n]
 print(recommended_recipes[['name', 'description']])
 ```
 
-#### 4. Diagram Arsitektur Inferensi
-
-Berikut visualisasi alur inferensi collaborative filtering:
+#### 4. Hasil Inference
 
 ![Inference Collaborative Filtering](img/collaborative.png)
 
