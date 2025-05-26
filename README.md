@@ -259,7 +259,13 @@ print("Rekomendasi makanan yang mirip 'Cream of Spinach Soup':")
 print(recommend_content("cream of spinach soup"))
 ```
 
-#### 3. Penyimpanan Model
+#### 3. Diagram Arsitektur Inferensi
+
+Berikut adalah ilustrasi proses inferensi pada content-based filtering:
+
+![Inference Content-Based Filtering](img/content.png)
+
+#### 4. Penyimpanan Model
 
 Untuk mempermudah deployment dan pengujian ulang, model disimpan ke dalam file `.pkl`, terdiri dari:
 
@@ -267,12 +273,6 @@ Untuk mempermudah deployment dan pengujian ulang, model disimpan ke dalam file `
 * `tfidf_matrix.pkl` – representasi TF-IDF semua resep
 * `nearest_neighbors_model.pkl` – model pencarian kemiripan
 * `name_to_index.pkl` – mapping nama resep ke indeks TF-IDF
-
-#### 4. Diagram Arsitektur Inferensi
-
-Berikut adalah ilustrasi proses inferensi pada content-based filtering:
-
-![Inference Content-Based Filtering](img/content.png)
 
 ---
 
@@ -348,6 +348,14 @@ print(recommended_recipes[['name', 'description']])
 Berikut visualisasi alur inferensi collaborative filtering:
 
 ![Inference Collaborative Filtering](img/collaborative.png)
+
+#### 5. Penyimpanan Model
+
+Untuk mempermudah deployment dan pengujian ulang, model disimpan ke dalam file `.keras`
+
+```python
+model.save("recommendasi_model.keras")
+```
 
 ---
 
