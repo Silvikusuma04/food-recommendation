@@ -13,30 +13,6 @@ Tujuan utama proyek ini bukan hanya menyajikan rekomendasi resep populer, tetapi
 
 Kebutuhan akan sistem ini diperkuat oleh berbagai riset. Chow et al. (2023) menyatakan bahwa recommender system di bidang makanan menghadapi tantangan unik seperti variasi rasa, kompleksitas bahan, dan preferensi personal yang tinggi. Selain itu, laporan Bahri et al. (2021) menunjukkan bahwa penerapan sistem rekomendasi berbasis collaborative filtering pada aplikasi lokal seperti EatAja mampu meningkatkan relevansi hasil hingga 30% dibanding pendekatan manual atau statis.
 
-### Permasalahan dan Urgensi
-
-1. **Volume Data Besar**: Dengan ratusan ribu resep dan ulasan pengguna yang terus bertambah, pengguna kesulitan menyaring dan menemukan resep yang benar-benar sesuai.
-2. **Preferensi yang Unik dan Personal**: Preferensi makanan sangat bervariasi antar pengguna, mulai dari kesukaan rasa, alergi, hingga pilihan diet.
-3. **Kebutuhan Personalization**: Sistem statis tidak mampu menangkap pola kompleks dari pengguna aktif.
-4. **Tantangan Industri Kuliner Digital**: Persaingan platform tinggi, fitur pintar menjadi keunggulan kompetitif.
-
-### Solusi yang Diajukan
-
-1. **Content-Based Filtering**:
-
-   * Memanfaatkan fitur teks dari resep (judul, deskripsi, bahan) untuk menghitung kemiripan antar resep menggunakan TF-IDF dan cosine similarity.
-   * Cocok untuk memberikan rekomendasi mirip dengan resep yang disukai pengguna sebelumnya.
-
-2. **Collaborative Filtering**:
-
-   * Membangun model artificial neural network (ANN) untuk mempelajari pola interaksi pengguna-resep berbasis data rating.
-   * Memberikan rekomendasi berdasarkan kesamaan preferensi antar pengguna.
-
-3. **Implementasi dan Integrasi**:
-
-   * Sistem dibangun dengan Python menggunakan library seperti `scikit-learn`, `TensorFlow`, dan `Keras`.
-   * Semua model disimpan dalam format `.pkl` dan `.keras` untuk keperluan deployment.
-
 ---
 
 ## Referensi
@@ -55,54 +31,74 @@ Kebutuhan akan sistem ini diperkuat oleh berbagai riset. Chow et al. (2023) meny
 
 ### Problem Statement
 
-Pengguna sulit menemukan resep makanan yang sesuai dengan preferensi atau kebiasaan sebelumnya karena volume data yang besar dan tidak terstruktur.
-
----
+1. Pengguna kesulitan menemukan resep makanan yang sesuai dengan preferensi atau kebiasaan sebelumnya karena volume data yang besar dan tidak terstruktur.
+2. Sistem rekomendasi konvensional belum mampu memahami preferensi personal pengguna secara tepat.
 
 ### Goals
-
-Membangun sistem rekomendasi makanan yang dapat:
 
 1. Memberikan rekomendasi resep mirip berdasarkan konten (nama, bahan, deskripsi).
 2. Memberikan rekomendasi resep yang disukai user lain dengan pola serupa.
 
----
-
 ### Solution Statement
 
-* **Content-Based Filtering**: Menggunakan TF-IDF dan cosine similarity untuk mencari resep yang mirip dari sisi konten.
-* **Collaborative Filtering**: Menggunakan Artificial Neural Network (ANN) untuk mempelajari pola interaksi user-item dari rating pengguna.
+1. **Content-Based Filtering**: Menggunakan TF-IDF dan cosine similarity untuk mencari resep yang mirip dari sisi konten.
+2. **Collaborative Filtering**: Menggunakan Artificial Neural Network (ANN) untuk mempelajari pola interaksi user-item dari rating pengguna.
 
 ---
 
 ## Data Understanding
 
-Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions):
+Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions).
 
-* recipes.csv (231,637 entri, 12 kolom)
-* interactions.csv (1,132,366 entri, 5 kolom)
+### Dataset Overview
 
-### Fitur:
+| Dataset                | Jumlah Baris | Jumlah Kolom | Keterangan                                  |
+| ---------------------- | ------------ | ------------ | ------------------------------------------- |
+| `RAW_recipes.csv`      | 231.637      | 12           | Metadata resep makanan (judul, bahan, dsb)  |
+| `RAW_interactions.csv` | 1.132.366    | 5            | Interaksi user-resep berupa rating & ulasan |
 
-**recipes.csv**:
+### Detail Fitur Setiap Dataset
 
-* `id`: ID resep
-* `name`: Nama resep
-* `description`: Deskripsi pengguna
-* `ingredients`: List bahan masakan
-* `tags`: Kategori masakan
+#### `RAW_recipes.csv` (12 kolom)
 
-**interactions.csv**:
+| Kolom            | Tipe Data | Deskripsi                                                                           | Missing |
+| ---------------- | --------- | ----------------------------------------------------------------------------------- | ------- |
+| `name`           | object    | Nama resep makanan                                                                  | 1    |
+| `id`             | int       | ID unik resep                                                                       | 0       |
+| `minutes`        | int       | Waktu memasak (dalam menit)                                                         | 0       |
+| `contributor_id` | int       | ID pengguna yang mengirimkan resep                                                  | 0       |
+| `submitted`      | object    | Tanggal pengiriman resep                                                            | 0       |
+| `tags`           | object    | Daftar tag/kategori resep (mis. "dessert", "gluten-free")                           | 0       |
+| `nutrition`      | object    | List berisi \[kalori, lemak total, gula, sodium, protein, lemak jenuh, karbohidrat] | 0       |
+| `n_steps`        | int       | Jumlah langkah memasak                                                              | 0       |
+| `steps`          | object    | Daftar instruksi memasak                                                            | 0       |
+| `description`    | object    | Deskripsi resep                                                                     | 4979    |
+| `ingredients`    | object    | List bahan yang digunakan                                                           | 0       |
+| `n_ingredients`  | int       | Jumlah bahan yang digunakan                                                         | 0       |
 
-* `user_id`: ID pengguna
-* `recipe_id`: ID resep
-* `rating`: Rating yang diberikan
-* `review`: Teks ulasan
+Kolom yang digunakan untuk content-based filtering adalah: `name`, `description`, `ingredients`.
+
+#### `RAW_interactions.csv` (5 kolom)
+
+| Kolom       | Tipe Data | Deskripsi                         | Missing |
+| ----------- | --------- | --------------------------------- | ------- |
+| `user_id`   | object    | ID unik pengguna                  | 0       |
+| `recipe_id` | int       | ID resep yang diberi rating       | 0       |
+| `date`      | object    | Tanggal interaksi                 | 0       |
+| `rating`    | int       | Nilai rating yang diberikan (0–5) | 0       |
+| `review`    | object    | Teks ulasan pengguna              | 169     |
+
+Kolom yang digunakan untuk collaborative filtering adalah: `user_id`, `recipe_id`, `rating`.
 
 ### Data Quality:
 
-* **Missing Values**: ditemukan pada kolom `review`, `name`, dan `description`.
-* **Duplicate Rows**: tidak ditemukan data duplikat pada kedua dataset.
+* **Missing Values**:
+
+  * `recipes.csv`: Kolom `name` dan `description` mengandung missing values (4979 entri)
+  * `interactions.csv`: Kolom `review` memiliki 169 nilai kosong
+* **Duplicate Rows**:
+
+  * Tidak ditemukan data duplikat pada kedua dataset
 
 ---
 
@@ -183,12 +179,24 @@ Visualisasi ini menampilkan frekuensi jumlah bahan (`ingredients`) dalam tiap re
 
 3. **TF-IDF Vectorization**:
 
-   * Fitur `content` kemudian dikonversi ke bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency).
-   * `TfidfVectorizer` digunakan dengan parameter berikut:
+   * Setelah kolom `content` siap, teks tersebut dikonversi menjadi representasi numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency).
 
-     * `max_features=5000`: untuk membatasi jumlah fitur dan menjaga efisiensi komputasi.
-     * `stop_words='english'`: menghapus kata-kata umum (stopwords) dari Bahasa Inggris.
-   * Hasilnya adalah matriks sparse berukuran `[jumlah_resep x 5000]` yang merepresentasikan pentingnya setiap kata dalam masing-masing resep.
+   * TF-IDF bekerja dengan menghitung bobot kata berdasarkan frekuensi relatifnya dalam dokumen tertentu dibanding seluruh dokumen:
+
+     $TFIDF(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)$
+
+     Dimana:
+
+     * `TF(t,d)`: Frekuensi kata `t` dalam dokumen `d`
+     * `N`: Jumlah total dokumen
+     * `DF(t)`: Jumlah dokumen yang mengandung kata `t`
+
+   * Dalam implementasi ini digunakan `TfidfVectorizer` dari `sklearn` dengan parameter:
+
+     * `max_features=5000`: membatasi jumlah kata paling informatif agar efisien
+     * `stop_words='english'`: menghilangkan kata umum bahasa Inggris
+
+   * Hasil akhirnya adalah **matriks sparse** dengan dimensi `[jumlah resep x 5000]` yang mewakili bobot pentingnya kata-kata dalam masing-masing resep. Matriks ini menjadi input untuk proses content-based filtering menggunakan cosine similarity.
 
 ### Collaborative Filtering Preprocessing
 
@@ -218,52 +226,63 @@ Visualisasi ini menampilkan frekuensi jumlah bahan (`ingredients`) dalam tiap re
 
 ### Content-Based Filtering
 
-Sistem ini memanfaatkan teknik pencarian berbasis konten untuk menemukan resep yang mirip satu sama lain berdasarkan teks deskripsi dan bahan-bahan. Proses utamanya:
+Sistem ini memanfaatkan pendekatan content-based filtering, yaitu merekomendasikan resep makanan yang mirip berdasarkan kesamaan konten teks antara resep, terutama pada kolom `name`, `description`, dan `ingredients`.
 
-1. **TF-IDF Vectorization**
-   Dokumen teks `content` (gabungan dari `name`, `description`, dan `ingredients`) direpresentasikan dalam bentuk numerik menggunakan TF-IDF (Term Frequency-Inverse Document Frequency), dengan rumus umum:
+#### 1. Cosine Similarity
 
-```math
-\text{TF-IDF}(t,d) = TF(t,d) \times \log\left(\frac{N}{DF(t)}\right)
-```
-
-* TF(t,d): Frekuensi kemunculan kata `t` dalam dokumen `d`
-* N: Jumlah total dokumen
-* DF(t): Jumlah dokumen yang mengandung kata `t`
-
-2. **Cosine Similarity**
-   Digunakan untuk mengukur kemiripan antar dokumen berdasarkan sudut antar vektor:
+Untuk mengukur kemiripan antar resep, digunakan rumus cosine similarity berikut:
 
 ```math
 \text{cosine\_similarity}(A,B) = \frac{A \cdot B}{\|A\| \times \|B\|}
+````
+
+Cosine similarity menghitung sudut antara dua vektor TF-IDF, di mana nilai kemiripan berkisar antara 0 (tidak mirip) hingga 1 (identik). Model `NearestNeighbors` dari `scikit-learn` digunakan untuk mengimplementasikan pendekatan ini.
+
+#### 2. Fungsi Rekomendasi
+
+Setelah vektor TF-IDF terbentuk, fungsi rekomendasi `recommend_content()` dibuat untuk mencari resep yang paling mirip dengan resep input berdasarkan nilai cosine similarity tertinggi.
+
+Contoh implementasi:
+
+```python
+def recommend_content(name, top_n=5):
+    idx = name_to_index[name]
+    distances, indices = nn_model.kneighbors(tfidf_matrix[idx], n_neighbors=top_n + 1)
+    indices = indices.flatten()[1:]
+    return recipes.iloc[indices][['id', 'name', 'description']]
 ```
 
-   Pendekatan ini diimplementasikan melalui model `NearestNeighbors` dari `sklearn`.
+Contoh pemanggilan fungsi:
 
-3. **Rekomendasi**
-   Fungsi `recommend_content()` menerima nama resep dan mengembalikan N resep terdekat berdasarkan kemiripan cosine dari TF-IDF matrix. Contoh:
+```python
+print("Rekomendasi makanan yang mirip 'Cream of Spinach Soup':")
+print(recommend_content("cream of spinach soup"))
+```
 
-   ```python
-   print("Rekomendasi makanan yang mirip 'Cream of Spinach Soup':")
-   print(recommend_content("cream of spinach soup"))
-   ```
+#### 3. Penyimpanan Model
 
-   Output: rekomendasi dengan nama dan deskripsi resep-resep yang paling serupa.
+Untuk mempermudah deployment dan pengujian ulang, model disimpan ke dalam file `.pkl`, terdiri dari:
 
-4. **Model Disimpan**
+* `tfidf_vectorizer.pkl` – untuk memproses input teks baru
+* `tfidf_matrix.pkl` – representasi TF-IDF semua resep
+* `nearest_neighbors_model.pkl` – model pencarian kemiripan
+* `name_to_index.pkl` – mapping nama resep ke indeks TF-IDF
 
-   * `tfidf_vectorizer.pkl` – untuk mengubah input teks baru ke vektor.
-   * `tfidf_matrix.pkl` – representasi resep dalam bentuk TF-IDF.
-   * `nearest_neighbors_model.pkl` – model yang bisa langsung digunakan untuk pencarian similarity.
-   * `name_to_index.pkl` – mapping nama ke indeks resep.
+#### 4. Diagram Arsitektur Inferensi
+
+Berikut adalah ilustrasi proses inferensi pada content-based filtering:
+
+![Inference Content-Based Filtering](img/content.png)
 
 ---
 
 ### Collaborative Filtering (Deep Learning)
 
-Model ini mempelajari interaksi antar pengguna dan resep menggunakan arsitektur Artificial Neural Network berbasis embedding.
+Model ini menggunakan pendekatan collaborative filtering berbasis neural network, yang mempelajari hubungan antara user dan item (resep) dari interaksi rating pengguna.
 
-#### Arsitektur Model
+#### 1. Arsitektur Model
+
+Model dibangun menggunakan `TensorFlow` dan `Keras`, dengan struktur embedding untuk user dan item. Prediksi rating dilakukan dengan dot product antara embedding user dan item, ditambah bias.
 
 ```python
 class RecommenderNet(Model):
@@ -276,246 +295,189 @@ class RecommenderNet(Model):
         return x
 ```
 
-Rumus prediksi:
+Rumus prediksi yang digunakan adalah:
 
-$$
+```math
 \hat{r}_{ui} = \mathbf{p}_u \cdot \mathbf{q}_i + b_u + b_i
-$$
+```
 
 Dimana:
 
-* $\mathbf{p}_u$: vektor embedding user
-* $\mathbf{q}_i$: vektor embedding item
-* $b_u, b_i$: bias user dan item
-* $\hat{r}_{ui}$: prediksi rating
+* \$\mathbf{p}\_u\$: vektor embedding user
+* \$\mathbf{q}\_i\$: vektor embedding item
+* \$b\_u\$, \$b\_i\$: bias user dan item
+* \$\hat{r}\_{ui}\$: prediksi rating user \$u\$ terhadap item \$i\$
 
-#### Konfigurasi Training
+#### 2. Konfigurasi Training
 
-* **Loss Function**: `mean squared error (MSE)`
-* **Optimizer**: `Adam` (learning rate 0.0001)
-* **Callback**: `EarlyStopping` (patience 3, restore best weights)
-* **Epochs**: 20, batch size: 64
+* **Loss Function**: `mean_squared_error`
+* **Optimizer**: `Adam` dengan learning rate 0.0001
+* **Batch Size**: 64
+* **Epochs**: 20
+* **Callback**: `EarlyStopping` untuk mencegah overfitting
 
-```python
-history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=20, callbacks=[early_stop])
-```
-
-#### Evaluasi
+Contoh kode training:
 
 ```python
-y_pred = model.predict(x_val)
-mse = mean_squared_error(y_val, y_pred)
-rmse = np.sqrt(mse)
+history = model.fit(
+    x_train, y_train,
+    validation_data=(x_val, y_val),
+    epochs=20,
+    callbacks=[early_stop]
+)
 ```
+
+#### 3. Inferensi dan Rekomendasi
+
+Setelah model dilatih, prediksi dilakukan dengan memberikan pasangan `[user_id, recipe_id]` dan mengembalikan estimasi rating yang mungkin diberikan user tersebut terhadap resep.
+
+Contoh pengambilan top rekomendasi:
+
+```python
+user_id = 8937
+recipe_ids = df_recipes['recipe_id'].values
+input_pairs = np.array([[user_id, rid] for rid in recipe_ids])
+predicted_ratings = model.predict(input_pairs)
+top_n = np.argsort(predicted_ratings.flatten())[::-1][:5]
+recommended_recipes = df_recipes.iloc[top_n]
+print(recommended_recipes[['name', 'description']])
+```
+
+#### 4. Diagram Arsitektur Inferensi
+
+Berikut visualisasi alur inferensi collaborative filtering:
+
+![Inference Collaborative Filtering](img/collaborative.png)
+
 ---
 
 ## Evaluasi
 
 ### Metode Evaluasi yang Digunakan
 
-#### 1. **Mean Squared Error (MSE)**
+#### 1. Precision@K (Content-Based Filtering)
+
+Untuk sistem rekomendasi berbasis konten, digunakan metrik **Precision@5**, yaitu rasio antara jumlah item yang relevan dibandingkan dengan jumlah item yang direkomendasikan.
+
+$$
+\text{Precision@5} = \frac{ \text{Jumlah item relevan yang direkomendasikan} }{ \text{Jumlah total item yang direkomendasikan} }
+$$
+
+Evaluasi dilakukan dengan menggunakan resep `"pasta"` sebagai query.
+
+- Sistem mengembalikan 5 resep teratas berdasarkan kemiripan cosine.
+- Kelima hasil rekomendasi dinilai masih dalam kategori pasta atau memiliki kedekatan semantik yang tinggi.
+
+**Hasil Precision@5:**  
+**5/5 = 1.00 atau 100%**
+
+#### Visualisasi Resep Query:
+
+![Resep Query Pasta](img/pasta.png)
+
+#### Hasil Rekomendasi dari Model:
+
+![Evaluasi Precision Content-Based](img/eval pasta.png)
+
+---
+
+#### 2. Mean Squared Error (MSE) – Collaborative Filtering
+
+MSE digunakan untuk mengukur selisih rata-rata kuadrat antara nilai rating aktual dengan prediksi model terhadap data validasi.
 
 $$
 MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 $$
 
-* MSE mengukur **rata-rata kesalahan kuadrat** antara nilai prediksi dan nilai aktual.
-* Nilai MSE yang lebih rendah menandakan bahwa rata-rata kesalahan prediksi lebih kecil.
-* Dalam konteks sistem rekomendasi, MSE digunakan untuk mengevaluasi seberapa baik model dalam memprediksi rating pengguna terhadap resep.
-
-**Hasil Evaluasi:**
-
-* **MSE = 0.2130**
+**Hasil Evaluasi:**  
+MSE = 0.2202
 
 ---
 
-#### 2. **Root Mean Squared Error (RMSE)**
+#### 3. Root Mean Squared Error (RMSE)
 
-RMSE adalah akar kuadrat dari MSE:
+RMSE adalah ukuran kesalahan yang lebih mudah diinterpretasikan karena berada dalam skala yang sama dengan rating aktual.
 
 $$
 RMSE = \sqrt{MSE}
 $$
 
-* RMSE lebih **mudah diinterpretasikan** karena memiliki satuan yang sama dengan target (rating), yaitu skala 0–1 (setelah normalisasi).
-* RMSE juga lebih **sensitif terhadap outlier** dibandingkan MSE.
+**Hasil Evaluasi:**  
+RMSE = 0.4692
 
-**Hasil Evaluasi:**
+RMSE ini menunjukkan bahwa prediksi model memiliki deviasi rata-rata sebesar 0.46 terhadap nilai rating aktual (setelah normalisasi).
 
-* **RMSE = 0.4615**
-
-### Interpretasi Nilai
-
-* Nilai RMSE sebesar **0.4615** berarti bahwa **prediksi rating model ANN memiliki deviasi rata-rata ±0.46 dari nilai rating sebenarnya**.
-* Dalam domain sistem rekomendasi, RMSE di bawah 0.5 dianggap **cukup baik**, terutama untuk dataset nyata dengan bias dan distribusi rating yang tidak merata.
-* Mengingat model tidak memiliki informasi eksplisit tentang isi resep (hanya berdasarkan pola rating), hasil ini cukup memuaskan dan menunjukkan bahwa model berhasil menangkap preferensi pengguna.
+---
 
 ### Visualisasi Kurva Pelatihan
 
-Berikut adalah kurva training dan validation loss selama proses pelatihan model collaborative filtering berbasis deep learning:
-
 ![Training Curve](img/plot.png)
 
-**Penjelasan Kurva:**
-
-* **Training Loss** menurun secara konsisten, menandakan bahwa model belajar dari data latih.
-* **Validation Loss** menunjukkan pola serupa di awal, tetapi kemudian stabil. Ini menunjukkan **konvergensi model**.
-* Tidak terjadi overfitting signifikan karena tidak ada lonjakan pada validation loss.
+- Kurva menunjukkan penurunan training loss yang konsisten.
+- Validation loss stabil, mengindikasikan proses pelatihan yang berjalan baik tanpa overfitting.
 
 ---
 
-## Inference: Collaborative Filtering
+### Perbandingan Content-Based dan Collaborative Filtering
 
-Setelah model collaborative filtering dilatih, dilakukan proses **inference** untuk memberikan rekomendasi makanan kepada pengguna berdasarkan pola historis rating pengguna lain yang memiliki preferensi serupa.
+## Ringkasan Performa Model
 
-### Fungsi: `recommend_for_user(user_id_raw, top_n=5)`
+| Model                   | Metrik         | Nilai    |
+|-------------------------|----------------|----------|
+| Content-Based Filtering | Precision@5    | 100%     |
+| Collaborative Filtering | RMSE           | 0.4692   |
 
-Fungsi ini menerima input `user_id_raw` (dalam bentuk asli dari dataset) dan mengembalikan daftar `top_n` resep makanan yang diprediksi paling disukai oleh pengguna tersebut berdasarkan model deep learning.
+## Perbandingan Menyeluruh
 
-### Penjelasan Tahapan Kode:
-
-```python
-def recommend_for_user(user_id_raw, top_n=5):
-    try:
-        user_idx = user_encoder.transform([user_id_raw])[0]
-    except ValueError:
-        print(f"User ID {user_id_raw} tidak ditemukan dalam data training.")
-        return pd.DataFrame()
-        
-    item_indices = np.arange(num_items)
-    user_input = np.full_like(item_indices, user_idx)
-
-    predictions = model.predict(np.stack([user_input, item_indices], axis=1), verbose=0)
-
-    top_indices = predictions.flatten().argsort()[::-1][:top_n]
-    recommended_item_ids = item_encoder.inverse_transform(top_indices)
-
-    return recipes[recipes['id'].isin(recommended_item_ids)][['id', 'name', 'description']].reset_index(drop=True)
-```
-
-#### Rincian Tahapan Fungsi:
-
-1. **Transformasi ID Pengguna:**
-
-   * `LabelEncoder` digunakan untuk mengubah `user_id_raw` menjadi indeks numerik yang dikenali oleh model.
-   * Jika user tidak ditemukan dalam data pelatihan, fungsi akan mengembalikan `DataFrame` kosong sebagai fallback mechanism.
-
-2. **Pembuatan Input Prediksi:**
-
-   * Dibuat array pasangan `user_id` dengan semua `item_id` yang tersedia (seluruh resep).
-   * Ini memungkinkan kita memprediksi seluruh kemungkinan resep untuk user tertentu secara efisien dalam satu batch.
-
-3. **Prediksi Rating oleh Model:**
-
-   * Model akan memproses input dan menghasilkan prediksi rating (dalam rentang 0–1) untuk semua item.
-
-4. **Seleksi Top-N Item:**
-
-   * Prediksi diurutkan secara menurun.
-   * Dipilih `top_n` item (resep) dengan prediksi rating tertinggi.
-
-5. **Keluaran Rekomendasi:**
-
-   * ID item hasil prediksi diubah kembali ke bentuk aslinya (`recipe_id`) menggunakan inverse transform dari `item_encoder`.
-   * Keluaran akhir berupa `DataFrame` yang berisi kolom `id`, `name`, dan `description`.
-
-### Contoh Eksekusi Inference
-
-```python
-user_id_input = 8937
-print(f"Rekomendasi untuk User ID {user_id_input} berdasarkan Collaborative Filtering:")
-hasil = recommend_for_user(user_id_input, top_n=5)
-print("Pesanan Rekomendasi:")
-print(hasil[['name', 'description']])
-```
-### Insight:
-
-* Rekomendasi yang muncul banyak berasal dari **kontes resep** atau memiliki karakteristik rasa dan konsep yang **unik/eksperimental**.
-* Mengindikasikan bahwa **User ID 8937 kemungkinan memiliki preferensi terhadap resep inovatif**, eksklusif, atau bertema event kompetisi.
-* Pendekatan ini bersifat **personalized**, karena didasarkan pada pola interaksi pengguna lain yang mirip secara latent (embedding space).
+| Aspek Evaluasi                  | Content-Based Filtering                                       | Collaborative Filtering                                       |
+|----------------------------------|---------------------------------------------------------------|---------------------------------------------------------------|
+| **Dasar pendekatan**            | Berdasarkan kemiripan teks antar item                         | Berdasarkan pola interaksi user-item                         |
+| **Input data utama**            | Kolom teks: `name`, `description`, `ingredients`             | Kolom rating: `user_id`, `recipe_id`, `rating`               |
+| **Metrik evaluasi**             | Precision@5: 100%                                             | RMSE: 0.4692                                                  |
+| **Kemampuan personalisasi**     | Tidak memperhitungkan preferensi unik per pengguna            | Disesuaikan dengan pola pengguna                             |
+| **Kelebihan**                   | Memberikan rekomendasi yang sangat relevan secara semantik    | Menangkap preferensi tersembunyi antar pengguna              |
+| **Keterbatasan**                | Tidak responsif terhadap perbedaan selera tiap pengguna       | Tidak dapat menangani item baru tanpa histori interaksi      |
+| **Cold start untuk user baru**  | Tidak berlaku (hanya butuh nama resep)                        | Memerlukan histori interaksi minimal                         |
+| **Cold start untuk item baru**  | Dapat direkomendasikan berdasarkan konten                     | Tidak dapat direkomendasikan tanpa interaksi sebelumnya      |
 
 ---
 
-## Dampak terhadap Permasalahan Bisnis
+### Keterkaitan antara Problem Statement, Goals, dan Solusi yang Diberikan
 
-Proyek sistem rekomendasi makanan ini dirancang dan diimplementasikan untuk mengatasi tantangan nyata yang dihadapi pengguna pada platform resep berskala besar seperti Food.com. Berdasarkan problem statement dan tujuan yang telah ditetapkan sebelumnya, berikut adalah analisis menyeluruh mengenai bagaimana model yang dibangun menjawab kebutuhan bisnis.
+Proyek ini dimulai dengan dua pernyataan masalah utama yang dihadapi oleh pengguna dalam menjelajahi dan menemukan resep makanan yang sesuai. 
 
-### 1. Menjawab Tantangan Volume Data Besar
+1. **Masalah pertama** berkaitan dengan kesulitan pengguna dalam menemukan resep yang relevan dengan preferensi atau kebiasaan mereka, terutama karena volume data resep yang besar dan tidak terstruktur.
 
-**Masalah**:
-Jumlah resep mencapai ratusan ribu dengan jutaan interaksi pengguna yang tidak mungkin dianalisis secara manual.
-
-**Solusi yang Diterapkan**:
-
-* Pendekatan content-based filtering memanfaatkan representasi teks dari nama, deskripsi, dan bahan untuk menghitung kemiripan antar resep, sehingga sistem dapat menyaring rekomendasi yang relevan tanpa eksplorasi manual.
-* Collaborative filtering dengan arsitektur artificial neural network (ANN) secara otomatis menemukan pola kesamaan antar pengguna berdasarkan histori rating.
-
-**Dampak**:
-
-* Meningkatkan efisiensi pengguna dalam menemukan resep relevan di tengah data yang masif.
-* Mengurangi kebutuhan eksplorasi manual oleh pengguna, sehingga meningkatkan retensi dan pengalaman pengguna.
+2. **Masalah kedua** adalah bahwa sistem rekomendasi konvensional umumnya tidak mampu memahami preferensi pengguna secara personal, sehingga rekomendasi yang dihasilkan kurang tepat sasaran.
 
 ---
 
-### 2. Menangkap Preferensi yang Sangat Personal
+Untuk menjawab **masalah pertama**, proyek ini menetapkan tujuan untuk membangun sistem **rekomendasi berbasis konten** yang dapat menyarankan resep makanan mirip berdasarkan informasi resep seperti nama, deskripsi, dan bahan-bahan. 
 
-**Masalah**:
-Preferensi makanan sangat bervariasi, seperti diet keto, rendah kalori, alergi, dan selera pribadi.
+Solusi yang dikembangkan adalah **Content-Based Filtering** menggunakan **TF-IDF** untuk mengubah konten resep menjadi representasi numerik, dan kemudian menggunakan **cosine similarity** untuk mengukur kemiripan antar resep. 
 
-**Solusi yang Diterapkan**:
+Dengan pendekatan ini, sistem mampu:
 
-* TF-IDF menyimpan konteks unik dari setiap resep dalam bentuk representasi numerik.
-* Cosine similarity digunakan untuk menemukan resep yang paling mirip berdasarkan deskripsi dan bahan.
-* ANN mempelajari representasi pengguna dan item dalam ruang embedding, sehingga dapat menangkap kesamaan preferensi meskipun jenis makanannya berbeda.
-
-**Dampak**:
-
-* Rekomendasi menjadi lebih personal dan kontekstual.
-* Meningkatkan kepuasan dan relevansi hasil rekomendasi bagi masing-masing pengguna.
+- Menemukan resep yang serupa secara semantik
+- Memberikan rekomendasi tanpa perlu interaksi pengguna sebelumnya (mengatasi cold-start untuk item)
+- Meningkatkan efisiensi eksplorasi katalog resep oleh pengguna
 
 ---
 
-### 3. Mengatasi Cold Start dan Sparsity
+Untuk menjawab **masalah kedua**, tujuan yang ditetapkan adalah mengembangkan sistem yang mampu **mempelajari preferensi pengguna berdasarkan interaksi historis**, seperti rating terhadap resep. 
 
-**Masalah**:
+Solusi yang diimplementasikan adalah **Collaborative Filtering** berbasis **deep learning** dengan menggunakan **Artificial Neural Network (ANN)**. 
 
-* Pengguna baru (cold-start) dan resep baru sulit direkomendasikan jika sistem hanya bergantung pada rating.
-* Interaksi pengguna terhadap item sangat jarang (sparse), menyulitkan sistem tradisional dalam melakukan pembelajaran.
+Model ini bekerja dengan:
 
-**Solusi yang Diterapkan**:
+- Membangun **embedding** untuk pengguna dan item
+- Menggabungkan embedding tersebut dengan **dot product** dan penyesuaian bias
+- Memberikan prediksi rating yang mencerminkan preferensi personal pengguna
 
-* Content-based filtering tidak bergantung pada rating, sehingga tetap dapat memberikan rekomendasi untuk pengguna atau resep baru.
-* Collaborative filtering berbasis deep learning lebih tangguh terhadap sparsity karena menggunakan pembelajaran representasi laten.
+Dengan demikian, sistem dapat memberikan:
 
-**Dampak**:
+- Rekomendasi yang **terpersonalisasi**
+- Kemampuan untuk mengenali pola tersembunyi dari interaksi pengguna lain yang serupa
+- Nilai tambah bagi pengguna dalam bentuk pengalaman penggunaan yang lebih relevan dan menarik
 
-* Model lebih adaptif terhadap data baru dan dapat memberi rekomendasi awal yang tetap relevan.
-* Memperkuat cakupan sistem dan keberlanjutan performanya dalam jangka panjang.
-
----
-
-### 4. Menjawab Kebutuhan Bisnis Kuliner Digital
-
-**Masalah Bisnis**:
-Platform kuliner digital menghadapi persaingan tinggi. Fitur rekomendasi menjadi pembeda strategis untuk meningkatkan user experience.
-
-**Solusi yang Diterapkan**:
-
-* Sistem ini dapat diintegrasikan sebagai fitur pintar pada website atau aplikasi kuliner.
-* Model dan pipeline sudah disiapkan dalam format `.keras`, `.pkl`, dan `.joblib`, sehingga siap untuk diterapkan pada lingkungan produksi.
-
-**Dampak**:
-
-* Meningkatkan keterlibatan pengguna dan durasi penggunaan platform.
-* Meningkatkan konversi dari eksplorasi resep ke eksekusi resep nyata oleh pengguna.
-* Membuka peluang monetisasi rekomendasi, seperti promosi bahan makanan atau kemitraan dengan brand.
-
----
-
-## Kesimpulan
-
-Melalui pendekatan content-based dan collaborative filtering, sistem ini berhasil mengatasi masalah utama yang dihadapi pengguna, yaitu kesulitan menemukan resep yang sesuai secara cepat dan personal. Dengan akurasi model yang baik serta struktur sistem yang modular dan scalable, solusi ini tidak hanya efektif dari sisi teknis, tetapi juga memiliki nilai strategis dari perspektif bisnis dan pengalaman pengguna. Sistem ini dapat dikembangkan lebih lanjut untuk mendukung filtering berbasis nutrisi, alergi, dan bahkan input visual berbasis gambar.
-
-
-
-
+Kedua pendekatan ini, content-based dan collaborative filtering, dirancang untuk **menjawab masing-masing pernyataan masalah dan mencapai goals yang ditetapkan**. Content-based filtering menangani masalah ketidakterstrukturan data dan kebutuhan untuk merekomendasikan resep baru, sedangkan collaborative filtering menangani kebutuhan akan personalisasi berbasis interaksi pengguna.
