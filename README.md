@@ -50,7 +50,7 @@ Kebutuhan akan sistem ini diperkuat oleh berbagai riset. Chow et al. (2023) meny
 
 Dataset digunakan dari [Food.com Recipes and Interactions Dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions).
 
-### Dataset Overview
+### Dataset Overview Yang Digunakan
 
 | Dataset                | Jumlah Baris | Jumlah Kolom | Keterangan                                  |
 | ---------------------- | ------------ | ------------ | ------------------------------------------- |
@@ -385,7 +385,7 @@ Evaluasi dilakukan dengan menggunakan resep `"pasta"` sebagai query.
 
 ---
 
-#### 2. Mean Squared Error (MSE) – Collaborative Filtering
+#### 2. Mean Squared Error (MSE) (Collaborative Filtering)
 
 MSE digunakan untuk mengukur selisih rata-rata kuadrat antara nilai rating aktual dengan prediksi model terhadap data validasi.
 
@@ -398,7 +398,7 @@ MSE = 0.2202
 
 ---
 
-#### 3. Root Mean Squared Error (RMSE)
+#### 3. Root Mean Squared Error (RMSE) (Collaborative Filtering)
 
 RMSE adalah ukuran kesalahan yang lebih mudah diinterpretasikan karena berada dalam skala yang sama dengan rating aktual.
 
