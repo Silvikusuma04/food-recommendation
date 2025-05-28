@@ -160,12 +160,12 @@ Visualisasi ini menampilkan frekuensi jumlah bahan (`ingredients`) dalam tiap re
 
 ## Data Preparation
 
-### 1. Handling Missing Values:
+### 1. Handling Missing Values (all data)
 
 * `description`, `name`, `ingredients` diisi default string.
 * `review` kosong diisi "No review provided by user."
 
-### Content-Based Filtering Preprocessing
+### 2. Content-Based Filtering Preprocessing
 
 1. **Pembuatan Fitur `content`**:
 
@@ -198,7 +198,7 @@ Visualisasi ini menampilkan frekuensi jumlah bahan (`ingredients`) dalam tiap re
 
    * Hasil akhirnya adalah **matriks sparse** dengan dimensi `[jumlah resep x 5000]` yang mewakili bobot pentingnya kata-kata dalam masing-masing resep. Matriks ini menjadi input untuk proses content-based filtering menggunakan cosine similarity.
 
-### Collaborative Filtering Preprocessing
+### 3. Collaborative Filtering Preprocessing
 
 1. **Encoding Identitas**:
 
